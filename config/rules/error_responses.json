@@ -1,0 +1,47 @@
+{
+  "name": "error_responses",
+  "description": "Validates that API error responses follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Errors must include a message, error ID, meta, and validation details"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The message must be a user-friendly message detailing what went wrong"
+    },
+    {
+      "type": "resource_naming",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "message": "The errorId must be a UUID that was also logged with an appropriate stack trace or WARN or ERROR log"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The validationDetails must describe what the issue was with the fields"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The field name must match the field name being set in the request payload"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "If the field is an object, the validationDetails can include an object with fields nested within"
+    },
+    {
+      "type": "resource_naming",
+      "pattern": "^.*\\[[0-9]+\\]$",
+      "message": "If the field is an array, the array index must be indicated with square brackets beside the field name"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "All validation errors should be returned in a single response"
+    }
+  ]
+}

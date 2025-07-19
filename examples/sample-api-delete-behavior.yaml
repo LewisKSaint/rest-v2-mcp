@@ -1,0 +1,270 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper DELETE Behavior
+  version: 1.0.0
+paths:
+  /api/v2/platform/environments:
+    get:
+      summary: Get all environments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Environment'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+    post:
+      summary: Create a new environment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Environment'
+                required:
+                  - data
+  /api/v2/platform/environments/{environmentId}:
+    get:
+      summary: Get environment by ID
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Environment'
+                required:
+                  - data
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete environment by ID
+      description: Deletes an environment. Returns 404 if the environment doesn't exist.
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Successful deletion with status entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      status:
+                        type: string
+                        example: "deleted"
+                      message:
+                        type: string
+                        example: "Environment successfully deleted"
+                required:
+                  - data
+        '202':
+          description: Accepted - Deletion has been queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      status:
+                        type: string
+                        example: "deletion_queued"
+                      message:
+                        type: string
+                        example: "Environment deletion has been queued"
+                required:
+                  - data
+        '204':
+          description: No Content - Successful deletion without response entity
+        '404':
+          description: Not Found - Environment doesn't exist or user doesn't have permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v2/platform/environments/{environmentId}/immediate:
+    delete:
+      summary: Delete environment immediately
+      description: Deletes an environment immediately without returning an entity
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content - Successful deletion without response entity
+        '404':
+          description: Not Found - Environment doesn't exist or user doesn't have permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v2/platform/environments/{environmentId}/async:
+    delete:
+      summary: Delete environment asynchronously
+      description: Queues the environment for deletion
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Accepted - Deletion has been queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      status:
+                        type: string
+                        example: "deletion_queued"
+                      message:
+                        type: string
+                        example: "Environment deletion has been queued"
+                required:
+                  - data
+        '404':
+          description: Not Found - Environment doesn't exist or user doesn't have permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    EnvironmentInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [development, staging, production]
+      required:
+        - name
+        - type
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "environment"
+        name:
+          type: string
+        description:
+          type: string
+        environmentType:
+          type: string
+          enum: [development, staging, production]
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - environmentType
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Resource not found"
+        errorId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        meta:
+          type: object
+        validationDetails:
+          type: array
+          items:
+            type: object
+      required:
+        - message
+        - errorId
+        - meta
+        - validationDetails

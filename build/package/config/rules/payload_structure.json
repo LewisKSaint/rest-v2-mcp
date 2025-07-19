@@ -1,0 +1,21 @@
+{
+  "name": "payload_structure",
+  "description": "Validates that API payload structure follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "response_envelope",
+      "field": "data",
+      "message": "All responses must include an envelope containing a data field for the resulting objects"
+    },
+    {
+      "type": "request_no_envelope",
+      "message": "Requests must not use a data envelope"
+    },
+    {
+      "type": "response_metadata",
+      "field": "meta",
+      "message": "Metadata about the response (ex. pagination) must be in a meta JSON object"
+    }
+  ]
+}

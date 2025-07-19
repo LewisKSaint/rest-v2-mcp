@@ -1,0 +1,389 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Singular User Resources
+  version: 1.0.0
+paths:
+  /api/v2/platform/user:
+    get:
+      summary: Get current user profile
+      description: |
+        Returns the profile of the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+                required:
+                  - data
+  /api/v2/platform/user/preferences:
+    get:
+      summary: Get current user preferences
+      description: |
+        Returns the preferences of the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserPreferences'
+                required:
+                  - data
+    put:
+      summary: Update current user preferences
+      description: |
+        Updates the preferences of the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPreferencesInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserPreferences'
+                required:
+                  - data
+  /api/v2/platform/user/apikeys:
+    get:
+      summary: Get current user API keys
+      description: |
+        Returns the API keys of the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+    post:
+      summary: Create API key for current user
+      description: |
+        Creates a new API key for the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ApiKey'
+                required:
+                  - data
+  /api/v2/platform/user/apikeys/{apiKeyId}:
+    get:
+      summary: Get specific API key of current user
+      description: |
+        Returns a specific API key of the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      parameters:
+        - name: apiKeyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ApiKey'
+                required:
+                  - data
+    delete:
+      summary: Delete specific API key of current user
+      description: |
+        Deletes a specific API key of the currently logged in user.
+        Note: This endpoint uses the singular noun 'user' as it refers to the currently logged in user.
+      parameters:
+        - name: apiKeyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v2/platform/users:
+    get:
+      summary: Get all users
+      description: |
+        Returns a list of all users in the organization.
+        Note: This endpoint uses the plural noun 'users' as it refers to a collection of users.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+  /api/v2/platform/users/{userId}:
+    get:
+      summary: Get specific user
+      description: |
+        Returns a specific user by ID.
+        Note: This endpoint uses the plural noun 'users' with an ID parameter as it refers to a specific user in a collection.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "user"
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, pending]
+        role:
+          type: string
+          enum: [admin, user, guest]
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - email
+        - firstName
+        - lastName
+        - status
+        - role
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    UserPreferences:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "userPreferences"
+        userId:
+          type: string
+        theme:
+          type: string
+          enum: [light, dark, system]
+        notifications:
+          type: object
+          properties:
+            email:
+              type: boolean
+            push:
+              type: boolean
+        timezone:
+          type: string
+        language:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - userId
+        - theme
+        - notifications
+        - timezone
+        - language
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    UserPreferencesInput:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, system]
+        notifications:
+          type: object
+          properties:
+            email:
+              type: boolean
+            push:
+              type: boolean
+        timezone:
+          type: string
+        language:
+          type: string
+    ApiKey:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "apiKey"
+        userId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastUsed:
+          type: string
+          format: date-time
+          nullable: true
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - userId
+        - name
+        - key
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    ApiKeyInput:
+      type: object
+      properties:
+        name:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - name

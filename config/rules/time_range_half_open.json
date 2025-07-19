@@ -1,0 +1,37 @@
+{
+  "name": "time_range_half_open",
+  "description": "Validates that time ranges follow half-open interval convention as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Time ranges MUST use half-open intervals [start, end) where start is inclusive and end is exclusive"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Time range parameters MUST be named with 'from' (inclusive) and 'to' (exclusive)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Time range parameters MUST NOT be named 'start' and 'end'"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Time range parameters MUST NOT be named 'begin' and 'end'"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Time range parameters MUST NOT be named 'startTime' and 'endTime'"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Time range parameters MUST NOT be named 'beginTime' and 'endTime'"
+    }
+  ]
+}

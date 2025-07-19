@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Error Response Structure
+  version: 1.0.0
+paths:
+  /api/v2/platform/environments:
+    get:
+      summary: Get all environments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Environment'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a new environment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Environment'
+                required:
+                  - data
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        pageSize:
+          type: integer
+        pageNumber:
+          type: integer
+    EnvironmentInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [development, staging, production]
+        settings:
+          type: object
+          properties:
+            autoScaling:
+              type: boolean
+            maxInstances:
+              type: integer
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - type
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [development, staging, production]
+        settings:
+          type: object
+          properties:
+            autoScaling:
+              type: boolean
+            maxInstances:
+              type: integer
+        tags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - type
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A user-friendly message detailing what went wrong
+          example: "An unexpected error occurred while processing your request"
+        errorId:
+          type: string
+          description: A UUID that was also logged with an appropriate stack trace
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        meta:
+          type: object
+          description: Additional metadata about the error
+          example:
+            timestamp: "2022-04-25T12:34:56.789Z"
+            requestId: "req-123456"
+        validationDetails:
+          type: array
+          description: Details about validation errors (if applicable)
+          items:
+            type: object
+      required:
+        - message
+        - errorId
+        - meta
+        - validationDetails
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A user-friendly message detailing what went wrong
+          example: "Validation failed for the request"
+        errorId:
+          type: string
+          description: A UUID that was also logged with an appropriate stack trace
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        meta:
+          type: object
+          description: Additional metadata about the error
+          example:
+            timestamp: "2022-04-25T12:34:56.789Z"
+            requestId: "req-123456"
+        validationDetails:
+          type: array
+          description: Details about validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: The field name that failed validation
+              message:
+                type: string
+                description: A message describing the validation error
+            required:
+              - field
+              - message
+          example:
+            - field: "name"
+              message: "Name is required"
+            - field: "type"
+              message: "Type must be one of: development, staging, production"
+            - field: "settings.maxInstances"
+              message: "Max instances must be a positive integer"
+            - field: "tags[0]"
+              message: "Tag must be a non-empty string"
+      required:
+        - message
+        - errorId
+        - meta
+        - validationDetails

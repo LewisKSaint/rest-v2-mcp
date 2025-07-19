@@ -1,0 +1,32 @@
+{
+  "name": "delete_behavior",
+  "description": "Validates that API delete behavior follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "DELETE operations on non-existent resources MUST return 404 Not Found"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "DELETE operations on resources that have already been deleted MUST return 404 Not Found"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "DELETE operations MUST NOT return 204 No Content for non-existent resources"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "DELETE operations MUST NOT return 200 OK for non-existent resources"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "DELETE operations MUST return 204 No Content for successful deletions"
+    }
+  ]
+}

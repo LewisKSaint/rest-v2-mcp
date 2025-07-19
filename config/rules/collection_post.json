@@ -1,0 +1,22 @@
+{
+  "name": "collection_post_method",
+  "description": "Validates that collection endpoints have POST methods",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/[^/]+/[^/]+$",
+      "message": "Collection endpoints should support POST method for creating new resources"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "POST operations on collection endpoints should return 201 Created with a Location header"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "POST operations should include the created resource in the response body"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "array_query_parameters",
+  "description": "Validates that API array query parameters follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "array_format",
+      "format": "comma-delimited",
+      "message": "Array query parameters should be passed as comma-delimited strings"
+    },
+    {
+      "type": "array_documentation",
+      "message": "Document that the parameter holds a comma-delimited string using the Swagger description annotation"
+    },
+    {
+      "type": "array_size_documentation",
+      "message": "Document minimum and maximum array size where appropriate"
+    },
+    {
+      "type": "array_example",
+      "examples": [
+        "?ids=string1,string2,string3",
+        "?tags=tag1,tag2,tag3",
+        "?environmentIds=env-123,env-456,env-789"
+      ],
+      "message": "Examples of valid array query parameters"
+    },
+    {
+      "type": "array_invalid_example",
+      "examples": [
+        "?ids=string1&ids=string2&ids=string3"
+      ],
+      "message": "Do not use repeated key-value pairs for array query parameters"
+    }
+  ]
+}

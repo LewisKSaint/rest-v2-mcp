@@ -1,0 +1,55 @@
+{
+  "name": "long_running_operations",
+  "description": "Validates that API long running operations follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "async_response_code",
+      "status_code": 202,
+      "message": "HTTP status 202 MUST be returned for long running operations"
+    },
+    {
+      "type": "location_header",
+      "message": "The response SHOULD contain a location header with the Operation resource URI"
+    },
+    {
+      "type": "operation_resource_path",
+      "pattern": "^/api/v[0-9]+/[^/]+/[^/]+/[^/]+/operations/[^/]+$",
+      "message": "Operations must be available as a sub-resource of the affected resource. Ex. /api/v2/infrastructure/services/id123/operations/id456"
+    },
+    {
+      "type": "operation_collection_path",
+      "pattern": "^/api/v[0-9]+/[^/]+/[^/]+/[^/]+/operations$",
+      "message": "Retrieving a list of all Operations against a resource (Ex. /api/v2/infrastructure/services/id123/operations) SHOULD be supported"
+    },
+    {
+      "type": "operation_schema",
+      "required_fields": [
+        "id",
+        "operationType",
+        "createdBy",
+        "createdTime",
+        "status"
+      ],
+      "message": "Operation resource must include id, operationType, createdBy, createdTime, and status fields"
+    },
+    {
+      "type": "operation_status_values",
+      "values": ["pending", "inProgress", "succeeded", "failed"],
+      "message": "The minimum states that MUST be supported are: pending, inProgress, succeeded, failed"
+    },
+    {
+      "type": "operation_error_schema",
+      "required_fields": [
+        "message",
+        "errorId"
+      ],
+      "message": "Error object MUST exist when status is 'failed' and include message and errorId fields"
+    },
+    {
+      "type": "conflict_response_code",
+      "status_code": 409,
+      "message": "If parallel or queuing operations are not supported, HTTP status 409 (Conflict) MUST be returned"
+    }
+  ]
+}

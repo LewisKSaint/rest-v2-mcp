@@ -1,0 +1,283 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Array Query Parameters
+  version: 1.0.0
+paths:
+  /api/v2/platform/events:
+    get:
+      summary: Get events by IDs
+      parameters:
+        - name: ids
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Event IDs separated by commas.
+            Example: ids=event-123,event-456,event-789
+            Minimum: 1, Maximum: 10
+        - name: tags
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Tags separated by commas.
+            Example: tags=production,critical,frontend
+            Minimum: 1, Maximum: 5
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Field to sort by, optionally followed by a colon and the sort direction.
+            Examples:
+            - sort=name (sorts by name in ascending order)
+            - sort=name:asc (sorts by name in ascending order)
+            - sort=name:desc (sorts by name in descending order)
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+  /api/v2/platform/applications:
+    get:
+      summary: Get applications by environment IDs
+      parameters:
+        - name: environmentIds
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Environment IDs separated by commas.
+            Example: environmentIds=env-123,env-456,env-789
+            Minimum: 1, Maximum: 5
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter applications by status.
+            Examples:
+            - status==active
+            - status==active,inactive (OR semantics)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Application'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+  /api/v2/platform/schemas:
+    get:
+      summary: Get schemas by format and version
+      parameters:
+        - name: formats
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Schema formats separated by commas.
+            Example: formats=avro,json,protobuf
+            Minimum: 1, Maximum: 3
+        - name: versions
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Schema versions separated by commas.
+            Example: versions=1.0.0,1.1.0,2.0.0
+            Minimum: 1, Maximum: 5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schema'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "event"
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "application"
+        name:
+          type: string
+        description:
+          type: string
+        environmentId:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, deprecated]
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - environmentId
+        - status
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Schema:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "schema"
+        name:
+          type: string
+        description:
+          type: string
+        format:
+          type: string
+          enum: [avro, json, protobuf]
+        version:
+          type: string
+        content:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - format
+        - version
+        - content
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime

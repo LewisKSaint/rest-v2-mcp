@@ -1,0 +1,291 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Filtering
+  version: 1.0.0
+paths:
+  /api/v2/platform/events:
+    get:
+      summary: Get all events
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter events by name using SEMPv2 syntax.
+            Examples:
+            - name==eventName (equals)
+            - name!=eventName (not equals)
+        - name: version
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter events by version using SEMPv2 syntax.
+            Examples:
+            - version==1.0.0 (equals)
+            - version>=1.0.0 (greater than or equal)
+        - name: createdTime
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter events by creation time using SEMPv2 syntax.
+            Examples:
+            - createdTime>=2022-01-01T00:00:00Z (created on or after Jan 1, 2022)
+            - createdTime<2022-01-01T00:00:00Z (created before Jan 1, 2022)
+        - name: customAttributes
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter events by custom attributes using AND/OR semantics.
+            Examples:
+            - customAttributes=security==high (single attribute)
+            - customAttributes=security==high;colour==red (AND semantics)
+            - customAttributes=colour==red,green,blue (OR semantics for values)
+            - customAttributes=security==high;colour==red,blue,green (combination)
+            - customAttributes=colour==red,green,blue\\;security==high (escaped semicolon)
+        - name: tags
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter events by tags using AND/OR semantics.
+            Examples:
+            - tags==production (single tag)
+            - tags==production;tags==critical (AND semantics)
+            - tags==production,staging,development (OR semantics)
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Field to sort by, optionally followed by a colon and the sort direction.
+            Examples:
+            - sort=name (sorts by name in ascending order)
+            - sort=name:asc (sorts by name in ascending order)
+            - sort=name:desc (sorts by name in descending order)
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      filters:
+                        type: object
+                        description: Information about the filters applied
+                        properties:
+                          applied:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                property:
+                                  type: string
+                                  description: The property that was filtered
+                                operator:
+                                  type: string
+                                  description: The operator used for filtering
+                                value:
+                                  type: string
+                                  description: The value used for filtering
+                required:
+                  - data
+  /api/v2/platform/applications:
+    get:
+      summary: Get all applications
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter applications by name using SEMPv2 syntax.
+            Examples:
+            - name==appName (equals)
+            - name!=appName (not equals)
+        - name: environmentId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter applications by environment ID.
+            Examples:
+            - environmentId==env-123
+            - environmentId==env-123,env-456 (OR semantics)
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter applications by status.
+            Examples:
+            - status==active
+            - status==active,inactive (OR semantics)
+        - name: customAttributes
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter applications by custom attributes using AND/OR semantics.
+            Examples:
+            - customAttributes=team==frontend (single attribute)
+            - customAttributes=team==frontend;priority==high (AND semantics)
+            - customAttributes=team==frontend,backend,mobile (OR semantics for values)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Application'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      filters:
+                        type: object
+                        description: Information about the filters applied
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "event"
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+        customAttributes:
+          type: object
+          additionalProperties:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "application"
+        name:
+          type: string
+        description:
+          type: string
+        environmentId:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, deprecated]
+        customAttributes:
+          type: object
+          additionalProperties:
+            type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - environmentId
+        - status
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime

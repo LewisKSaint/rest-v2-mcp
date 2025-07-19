@@ -1,0 +1,32 @@
+{
+  "name": "delete_behavior",
+  "description": "Validates that API DELETE endpoints follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "delete_non_existent",
+      "status_code": 404,
+      "message": "DELETE on a non-existent resource should return a 404 Not Found"
+    },
+    {
+      "type": "delete_success_with_entity",
+      "status_code": 200,
+      "message": "Successful DELETE with an entity describing the status should return a 200 OK"
+    },
+    {
+      "type": "delete_success_queued",
+      "status_code": 202,
+      "message": "Successful DELETE for an action that has been queued should return a 202 Accepted"
+    },
+    {
+      "type": "delete_success_no_entity",
+      "status_code": 204,
+      "message": "Successful DELETE without an entity in the response should return a 204 No Content"
+    },
+    {
+      "type": "delete_response_codes",
+      "allowed_codes": [200, 202, 204, 404],
+      "message": "DELETE responses should use appropriate status codes (200, 202, 204 for success, 404 for not found)"
+    }
+  ]
+}

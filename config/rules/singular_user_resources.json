@@ -1,0 +1,32 @@
+{
+  "name": "singular_user_resources",
+  "description": "Validates that user resources follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/[^/]+/users/[^/]+$",
+      "message": "User resources MUST be singular (e.g. /api/v2/platform/users/user123)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/[^/]+/users$",
+      "message": "User collections MUST be plural (e.g. /api/v2/platform/users)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "User resources MUST NOT use 'me' as a path parameter (e.g. /api/v2/platform/users/me)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "User resources MUST NOT use 'current' as a path parameter (e.g. /api/v2/platform/users/current)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "User resources MUST NOT use 'self' as a path parameter (e.g. /api/v2/platform/users/self)"
+    }
+  ]
+}

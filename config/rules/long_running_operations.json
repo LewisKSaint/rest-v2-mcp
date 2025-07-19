@@ -1,0 +1,47 @@
+{
+  "name": "long_running_operations",
+  "description": "Validates that API long running operations follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "HTTP status 202 MUST be returned for long running operations"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The response SHOULD contain a location header with the Operation resource URI"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/[^/]+/[^/]+/[^/]+/operations/[^/]+$",
+      "message": "Operations must be available as a sub-resource of the affected resource. Ex. /api/v2/infrastructure/services/id123/operations/id456"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/[^/]+/[^/]+/[^/]+/operations$",
+      "message": "Retrieving a list of all Operations against a resource (Ex. /api/v2/infrastructure/services/id123/operations) SHOULD be supported"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Operation resource must include id, operationType, createdBy, createdTime, and status fields"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The minimum states that MUST be supported are: pending, inProgress, succeeded, failed"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Error object MUST exist when status is 'failed' and include message and errorId fields"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "If parallel or queuing operations are not supported, HTTP status 409 (Conflict) MUST be returned"
+    }
+  ]
+}

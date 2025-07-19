@@ -1,0 +1,27 @@
+{
+  "name": "array_query_parameters",
+  "description": "Validates that array query parameters follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Array query parameters MUST be formatted as comma-separated values (e.g. ?ids=id1,id2,id3)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Array query parameters MUST NOT use the format ?ids[]=id1&ids[]=id2"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Array query parameters MUST NOT use the format ?ids=id1&ids=id2"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Array query parameters MUST NOT use the format ?ids=id1+id2+id3"
+    }
+  ]
+}

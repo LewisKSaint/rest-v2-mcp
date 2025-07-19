@@ -1,0 +1,384 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Enum Naming
+  version: 1.0.0
+paths:
+  /api/v2/platform/services:
+    get:
+      summary: Get all services
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE, PENDING, FAILED]
+          description: Filter services by status
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [MESSAGING, EVENT_PORTAL, EVENT_BROKER]
+          description: Filter services by type
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+    post:
+      summary: Create a new service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceInput'
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-456
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+  /api/v2/platform/services/{serviceId}:
+    get:
+      summary: Get service by ID
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Service'
+                required:
+                  - data
+    delete:
+      summary: Delete a service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-789
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+  /api/v2/platform/services/{serviceId}/operations/{operationId}:
+    get:
+      summary: Get operation status
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: operationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+  /api/v2/platform/services/{serviceId}/actions/restart:
+    post:
+      summary: Restart a service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+                  enum: [GRACEFUL, IMMEDIATE, SCHEDULED]
+                  default: GRACEFUL
+                  description: The restart mode
+                scheduledTime:
+                  type: string
+                  format: date-time
+                  description: The scheduled time for the restart (required when mode is SCHEDULED)
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-789
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+  /api/v2/platform/sempv2/services/{serviceId}/actions/configure:
+    post:
+      summary: Configure a service using SEMPv2
+      description: |
+        This endpoint uses SEMPv2 enum values which are inherited from the SEMPv2 API.
+        Note: As an exception to the UPPER_SNAKE_CASE rule, SEMPv2 enum values use kebab-case for consistency with the SEMPv2 API.
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessType:
+                  type: string
+                  enum: ["exclusive", "non-exclusive"]
+                  description: |
+                    The access type for the service.
+                    Note: This enum uses kebab-case as it is inherited from SEMPv2 API.
+                authenticationScheme:
+                  type: string
+                  enum: ["basic", "client-certificate", "oauth2"]
+                  description: |
+                    The authentication scheme for the service.
+                    Note: This enum uses kebab-case as it is inherited from SEMPv2 API.
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-789
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "service"
+        name:
+          type: string
+        description:
+          type: string
+        serviceType:
+          type: string
+          enum: [MESSAGING, EVENT_PORTAL, EVENT_BROKER]
+          description: The type of service
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, PENDING, FAILED]
+          description: The current status of the service
+        plan:
+          type: string
+          enum: [STANDARD, ENTERPRISE, PREMIUM]
+          description: The service plan
+        region:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - serviceType
+        - status
+        - plan
+        - region
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    ServiceInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        serviceType:
+          type: string
+          enum: [MESSAGING, EVENT_PORTAL, EVENT_BROKER]
+          description: The type of service
+        plan:
+          type: string
+          enum: [STANDARD, ENTERPRISE, PREMIUM]
+          description: The service plan
+        region:
+          type: string
+      required:
+        - name
+        - serviceType
+        - plan
+        - region
+    Operation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the operation that it can be retrieved by
+        resourceId:
+          type: string
+          description: ID of the resource being operated on when applicable
+        operationType:
+          type: string
+          enum: [CREATE, UPDATE, DELETE, RESTART, CONFIGURE, FAILOVER, IMPORT]
+          description: Describes the operation against the resource
+        createdBy:
+          type: string
+          description: userId of the user that initialized the operation
+        createdTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation creation time
+        completedTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation completion time, whether success or failure
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCEEDED, FAILED]
+          description: One of "PENDING", "IN_PROGRESS", "SUCCEEDED", "FAILED"
+        error:
+          type: object
+          description: Non-null if status is "FAILED"
+          properties:
+            message:
+              type: string
+              description: User-friendly message detailing what went wrong
+            errorId:
+              type: string
+              description: A UUID for debugging that must be logged upon its creation
+            errorType:
+              type: string
+              enum: [VALIDATION_ERROR, RESOURCE_NOT_FOUND, PERMISSION_DENIED, INTERNAL_ERROR, SERVICE_UNAVAILABLE]
+              description: The type of error that occurred
+          required:
+            - message
+            - errorId
+            - errorType
+      required:
+        - id
+        - operationType
+        - createdBy
+        - createdTime
+        - status

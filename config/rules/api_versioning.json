@@ -1,0 +1,32 @@
+{
+  "name": "api_versioning",
+  "description": "Validates that API versioning follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/",
+      "message": "API version MUST be included in the URL path as /api/v{major}/"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Major version changes MUST be made when there are breaking changes"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Minor version changes MUST be made when there are non-breaking changes"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Patch version changes MUST be made when there are bug fixes"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Version MUST be included in the API documentation"
+    }
+  ]
+}

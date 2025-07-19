@@ -1,0 +1,426 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Long Running Operations
+  version: 1.0.0
+paths:
+  /api/v2/platform/services:
+    get:
+      summary: Get all services
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+    post:
+      summary: Create a new service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceInput'
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-456
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+  /api/v2/platform/services/{serviceId}:
+    get:
+      summary: Get service by ID
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Service'
+                required:
+                  - data
+    delete:
+      summary: Delete a service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-789
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v2/platform/services/{serviceId}/upgrade:
+    post:
+      summary: Upgrade a service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpgradeInput'
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/services/svc-123/operations/op-789
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v2/platform/services/{serviceId}/operations:
+    get:
+      summary: Get all operations for a service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, inProgress, succeeded, failed]
+          description: Filter operations by status
+        - name: operationType
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter operations by type
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Field to sort by, optionally followed by a colon and the sort direction.
+            Examples:
+            - sort=createdTime:desc (sorts by creation time in descending order)
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Operation'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+  /api/v2/platform/services/{serviceId}/operations/{operationId}:
+    get:
+      summary: Get operation by ID
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: operationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    ServiceInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [messaging, event-portal, event-broker]
+        plan:
+          type: string
+          enum: [standard, enterprise, premium]
+      required:
+        - name
+        - type
+        - plan
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "service"
+        name:
+          type: string
+        description:
+          type: string
+        serviceType:
+          type: string
+          enum: [messaging, event-portal, event-broker]
+        plan:
+          type: string
+          enum: [standard, enterprise, premium]
+        status:
+          type: string
+          enum: [provisioning, active, failed, deleting]
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - serviceType
+        - plan
+        - status
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    UpgradeInput:
+      type: object
+      properties:
+        targetVersion:
+          type: string
+        upgradeWindow:
+          type: object
+          properties:
+            startTime:
+              type: string
+              format: date-time
+            endTime:
+              type: string
+              format: date-time
+      required:
+        - targetVersion
+    Operation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the operation that it can be retrieved by
+        resourceId:
+          type: string
+          description: ID of the resource being operated on when applicable
+        operationType:
+          type: string
+          description: Describes the operation against the resource, such as "create", "failover", or "import"
+          example: "create"
+        createdBy:
+          type: string
+          description: userId of the user that initialized the operation
+        createdTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation creation time
+        completedTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation completion time, whether success or failure
+        status:
+          type: string
+          enum: [pending, inProgress, succeeded, failed, creating, configuring, upgrading]
+          description: One of "pending", "inProgress", "succeeded", "failed", or a custom in progress state
+        error:
+          type: object
+          description: Non-null if status is "failed"
+          properties:
+            message:
+              type: string
+              description: User-friendly message detailing what went wrong
+            errorId:
+              type: string
+              description: A UUID for debugging that must be logged upon its creation
+          required:
+            - message
+            - errorId
+        messages:
+          type: array
+          description: Optional detailed messages about the operation progress
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              message:
+                type: string
+      required:
+        - id
+        - operationType
+        - createdBy
+        - createdTime
+        - status
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: User-friendly message detailing what went wrong
+        errorId:
+          type: string
+          description: A UUID for debugging that must be logged upon its creation
+        meta:
+          type: object
+          description: Additional metadata about the error
+        validationDetails:
+          type: array
+          description: Details about validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+      required:
+        - message
+        - errorId

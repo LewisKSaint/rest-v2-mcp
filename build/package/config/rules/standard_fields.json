@@ -1,0 +1,17 @@
+{
+  "name": "standard_fields",
+  "description": "Validates that API resources include standard fields as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "schema_field",
+      "field": "id",
+      "message": "Every REST resource must have an 'id' field that represents the opaque ID of the object"
+    },
+    {
+      "type": "schema_field",
+      "field": "type",
+      "message": "Every REST resource must have a 'type' field that uniquely identifies the type of object being returned"
+    }
+  ]
+}

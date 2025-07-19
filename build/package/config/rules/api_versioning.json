@@ -1,0 +1,32 @@
+{
+  "name": "api_versioning",
+  "description": "Validates that API paths include proper versioning as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/.*$",
+      "message": "API paths must start with /api/v{number}/ (e.g., /api/v2/)"
+    },
+    {
+      "type": "version_major_change",
+      "message": "A new API version is a major change that implies fundamental changes to the API (e.g., using GraphQL instead of REST)"
+    },
+    {
+      "type": "version_compatibility",
+      "message": "Only backwards compatible and emergency changes will be made to stable APIs within a version"
+    },
+    {
+      "type": "emergency_change_definition",
+      "message": "An emergency change is a change made for security, regulatory, or specification violation reasons"
+    },
+    {
+      "type": "breaking_change_strategy",
+      "message": "A breaking change to a resource would require a whole new resource (e.g., /api/v2/infrastructure/services → /api/v2/infrastructure/brokerServices)"
+    },
+    {
+      "type": "major_product_change_strategy",
+      "message": "A major change to an entire product area would require a new product area (e.g., /api/v2/architecture → /api/v2/design)"
+    }
+  ]
+}

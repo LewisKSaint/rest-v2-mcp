@@ -1,0 +1,28 @@
+{
+  "name": "sorting",
+  "description": "Validates that API sorting follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "sort_parameter",
+      "parameter": "sort",
+      "message": "REST APIs should accept the 'sort' request parameter for sorting"
+    },
+    {
+      "type": "sort_format",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9]*(?::[a-zA-Z]+)?$",
+      "message": "Sort parameter value should be either a field name or a field name and direction delimited by a colon (e.g., 'name' or 'name:desc')"
+    },
+    {
+      "type": "sort_direction",
+      "default": "asc",
+      "allowed_values": ["asc", "desc"],
+      "message": "Sort direction should be 'asc' (default) or 'desc'"
+    },
+    {
+      "type": "sort_example",
+      "examples": ["?sort=name", "?sort=name:asc", "?sort=name:desc"],
+      "message": "Examples of valid sort parameters: '?sort=name', '?sort=name:asc', '?sort=name:desc'"
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Resource Paths
+  version: 1.0.0
+paths:
+  /api/v2/architecture/events:
+    get:
+      summary: Get all events
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+    post:
+      summary: Create a new event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Event'
+                required:
+                  - data
+  /api/v2/architecture/events/{eventId}:
+    get:
+      summary: Get event by ID
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Event'
+                required:
+                  - data
+  /api/v2/architecture/eventVersions:
+    get:
+      summary: Get all event versions
+      parameters:
+        - name: eventIds
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Comma-separated list of event IDs to filter by
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventVersion'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+    post:
+      summary: Create a new event version
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventVersionInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EventVersion'
+                required:
+                  - data
+  /api/v2/architecture/eventVersions/{eventVersionId}:
+    get:
+      summary: Get event version by ID
+      parameters:
+        - name: eventVersionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EventVersion'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    EventInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "event"
+        name:
+          type: string
+        description:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    EventVersionInput:
+      type: object
+      properties:
+        eventId:
+          type: string
+          description: The ID of the parent event (non-identifying attribute provided in the request body)
+        version:
+          type: string
+        description:
+          type: string
+        schema:
+          type: object
+      required:
+        - eventId
+        - version
+    EventVersion:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "eventVersion"
+        eventId:
+          type: string
+          description: The ID of the parent event
+        version:
+          type: string
+        description:
+          type: string
+        schema:
+          type: object
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - eventId
+        - version
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime

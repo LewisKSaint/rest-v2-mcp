@@ -1,0 +1,22 @@
+{
+  "name": "resource_paths",
+  "description": "Validates that API resource paths follow Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "REST APIs should avoid forcing the user to provide non-identifying attributes in the path"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/[a-zA-Z]+/[a-zA-Z]+(?:/\\{[a-zA-Z]+Id\\})?$",
+      "message": "Resource paths should follow the pattern /api/v{number}/{product area}/{resource type}/{id} without hierarchical relationships"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Non-identifying attributes should be provided in the request body or as query parameters, not in the path"
+    }
+  ]
+}

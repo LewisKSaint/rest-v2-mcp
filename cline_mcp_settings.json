@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "Solace REST V2 MCP Go": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 300,
+      "type": "stdio",
+      "command": "${workspaceFolder}/build/restv2-api-server-go",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "MCP_KEEP_ALIVE": "true",
+        "MCP_PORT": "9090"
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "filtering",
+  "description": "Validates that API filtering follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "filter_property_naming",
+      "message": "Filter that applies to a property of the object MUST match the name of the object property"
+    },
+    {
+      "type": "filter_operators",
+      "operators": ["==", "!=", "<", ">", "<=", ">="],
+      "message": "Filter query parameters MUST follow SEMPv2's syntax if operators are to be introduced (e.g. '==' | '!=' | '<' | '>' | '<=' | '>=')"
+    },
+    {
+      "type": "filter_multiple_values",
+      "and_separator": ";",
+      "or_separator": ",",
+      "message": "When filtering by multiple key/value pairs, each filter is separated by a semicolon (';') for AND semantic and comma (',') for OR semantic"
+    },
+    {
+      "type": "filter_special_characters",
+      "escape_char": "\\",
+      "message": "Special characters (e.g. ',', ';') need to be escaped in the query"
+    },
+    {
+      "type": "filter_example",
+      "examples": [
+        "?colour==red",
+        "?colour==red;security==high",
+        "?colour==red,green,blue;security==high",
+        "?customAttributes=security==high;colour==red,blue,green"
+      ],
+      "message": "Examples of valid filter parameters"
+    }
+  ]
+}

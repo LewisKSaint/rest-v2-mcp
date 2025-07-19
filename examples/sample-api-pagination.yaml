@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Pagination
+  version: 1.0.0
+paths:
+  /api/v2/platform/environments:
+    get:
+      summary: Get all environments
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Environment'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        type: object
+                        properties:
+                          count:
+                            type: integer
+                            description: Total number of elements available across all pages
+                            example: 23
+                          pageNumber:
+                            type: integer
+                            minimum: 1
+                            description: Current page number being returned (starts at 1, not 0)
+                            example: 1
+                          pageSize:
+                            type: integer
+                            minimum: 1
+                            description: Page size requested by the user or the default page size
+                            example: 20
+                          nextPage:
+                            type: integer
+                            nullable: true
+                            description: Next page available with results (null if there are no other pages)
+                            example: 2
+                          totalPages:
+                            type: integer
+                            minimum: 1
+                            description: Total number of pages
+                            example: 2
+                        required:
+                          - count
+                          - pageNumber
+                          - pageSize
+                          - nextPage
+                          - totalPages
+                required:
+                  - data
+                  - meta
+    post:
+      summary: Create a new environment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Environment'
+                required:
+                  - data
+components:
+  schemas:
+    EnvironmentInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [development, staging, production]
+      required:
+        - name
+        - type
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [development, staging, production]
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - type
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime

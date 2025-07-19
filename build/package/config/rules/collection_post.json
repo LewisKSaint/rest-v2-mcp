@@ -1,0 +1,19 @@
+{
+  "name": "collection_post_method",
+  "description": "Validates that collection endpoints have POST methods",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "method_check",
+      "path": "/api/v1/users",
+      "method": "post",
+      "message": "Collection endpoint /api/v1/users should support POST method for creating new resources"
+    },
+    {
+      "type": "method_check",
+      "path": "/api/v1/products",
+      "method": "post",
+      "message": "Collection endpoint /api/v1/products should support POST method for creating new resources"
+    }
+  ]
+}

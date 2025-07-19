@@ -1,0 +1,29 @@
+{
+  "name": "audit_fields",
+  "description": "Validates that DTOs include standard audit fields (createdBy, createdTime, updatedBy, updatedTime) as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "schema_field",
+      "field": "createdBy",
+      "message": "DTOs must include 'createdBy' field to track the user ID that created the entity"
+    },
+    {
+      "type": "schema_field",
+      "field": "createdTime",
+      "format": "date-time",
+      "message": "DTOs must include 'createdTime' field in ISO 8601 format (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')"
+    },
+    {
+      "type": "schema_field",
+      "field": "updatedBy",
+      "message": "DTOs must include 'updatedBy' field to track the user ID that last modified the entity"
+    },
+    {
+      "type": "schema_field",
+      "field": "updatedTime",
+      "format": "date-time",
+      "message": "DTOs must include 'updatedTime' field in ISO 8601 format (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')"
+    }
+  ]
+}

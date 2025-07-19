@@ -1,0 +1,12 @@
+{
+  "name": "resource_naming_convention",
+  "description": "Validates that resource names follow proper naming conventions",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "resource_naming",
+      "pattern": "^[a-z][a-zA-Z0-9]*$",
+      "message": "Resource names must start with a lowercase letter and contain only alphanumeric characters"
+    }
+  ]
+}

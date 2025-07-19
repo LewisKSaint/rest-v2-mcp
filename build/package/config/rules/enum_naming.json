@@ -1,0 +1,20 @@
+{
+  "name": "enum_naming",
+  "description": "Validates that enum values follow UPPER_SNAKE_CASE naming convention as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "enum_naming",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "message": "Enum values MUST be UPPER_SNAKE_CASE"
+    },
+    {
+      "type": "enum_documentation",
+      "message": "Enum values inherited from other APIs SHOULD match their style for consistency (ex. SEMPv2 enums like non-exclusive being kebab-case)"
+    },
+    {
+      "type": "enum_inheritance_check",
+      "message": "If enum values are inherited from other APIs, they should be documented as such"
+    }
+  ]
+}

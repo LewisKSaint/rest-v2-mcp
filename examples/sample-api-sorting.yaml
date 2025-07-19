@@ -1,0 +1,256 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Sorting
+  version: 1.0.0
+paths:
+  /api/v2/platform/environments:
+    get:
+      summary: Get all environments
+      parameters:
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Field to sort by, optionally followed by a colon and the sort direction.
+            Examples:
+            - sort=name (sorts by name in ascending order)
+            - sort=name:asc (sorts by name in ascending order)
+            - sort=name:desc (sorts by name in descending order)
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Environment'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      sort:
+                        type: object
+                        properties:
+                          field:
+                            type: string
+                            description: The field being sorted by
+                            example: "name"
+                          direction:
+                            type: string
+                            enum: [asc, desc]
+                            description: The sort direction
+                            example: "asc"
+                required:
+                  - data
+    post:
+      summary: Create a new environment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Environment'
+                required:
+                  - data
+  /api/v2/platform/environments/{environmentId}:
+    get:
+      summary: Get environment by ID
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Environment'
+                required:
+                  - data
+  /api/v2/platform/applications:
+    get:
+      summary: Get all applications
+      parameters:
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            Field to sort by, optionally followed by a colon and the sort direction.
+            Examples:
+            - sort=name (sorts by name in ascending order)
+            - sort=name:asc (sorts by name in ascending order)
+            - sort=name:desc (sorts by name in descending order)
+            - sort=createdTime:desc (sorts by creation time in descending order)
+        - name: environmentId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter applications by environment ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Application'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      sort:
+                        type: object
+                        properties:
+                          field:
+                            type: string
+                            description: The field being sorted by
+                            example: "name"
+                          direction:
+                            type: string
+                            enum: [asc, desc]
+                            description: The sort direction
+                            example: "asc"
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    EnvironmentInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [development, staging, production]
+      required:
+        - name
+        - type
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "environment"
+        name:
+          type: string
+        description:
+          type: string
+        environmentType:
+          type: string
+          enum: [development, staging, production]
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - environmentType
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "application"
+        name:
+          type: string
+        description:
+          type: string
+        environmentId:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - environmentId
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime

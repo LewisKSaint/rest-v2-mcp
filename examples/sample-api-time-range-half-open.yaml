@@ -1,0 +1,343 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Time Range Half-Open Approach
+  version: 1.0.0
+paths:
+  /api/v2/platform/events:
+    get:
+      summary: Get events within a time range
+      description: |
+        Returns events that occurred within the specified time range.
+        Note: The time range follows the Half-Open approach where the start time is inclusive and the end time is exclusive.
+        For example, a request with startTime=2023-01-01T00:00:00Z and endTime=2023-01-02T00:00:00Z will return events
+        that occurred on January 1st, 2023, up to but not including January 2nd, 2023.
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: |
+            The inclusive start time of the range in ISO8601 format.
+            Events with timestamps greater than or equal to this time will be included.
+          example: "2023-01-01T00:00:00Z"
+        - name: endTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: |
+            The exclusive end time of the range in ISO8601 format.
+            Events with timestamps less than (but not equal to) this time will be included.
+          example: "2023-01-02T00:00:00Z"
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      timeRange:
+                        type: object
+                        properties:
+                          startTime:
+                            type: string
+                            format: date-time
+                            description: The inclusive start time of the range
+                          endTime:
+                            type: string
+                            format: date-time
+                            description: The exclusive end time of the range
+                required:
+                  - data
+  /api/v2/platform/metrics:
+    get:
+      summary: Get metrics within a time range
+      description: |
+        Returns metrics collected within the specified time range.
+        Note: The time range follows the Half-Open approach where the start time is inclusive and the end time is exclusive.
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: |
+            The inclusive start date of the range in ISO8601 format (YYYY-MM-DD).
+            Metrics collected on or after this date will be included.
+          example: "2023-01-01"
+        - name: toDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: |
+            The exclusive end date of the range in ISO8601 format (YYYY-MM-DD).
+            Metrics collected before (but not on) this date will be included.
+          example: "2023-01-08"
+        - name: interval
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hourly, daily, weekly, monthly]
+            default: daily
+          description: The interval at which to aggregate metrics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Metric'
+                  meta:
+                    type: object
+                    properties:
+                      timeRange:
+                        type: object
+                        properties:
+                          fromDate:
+                            type: string
+                            format: date
+                            description: The inclusive start date of the range
+                          toDate:
+                            type: string
+                            format: date
+                            description: The exclusive end date of the range
+                          interval:
+                            type: string
+                            description: The interval at which metrics were aggregated
+                required:
+                  - data
+  /api/v2/platform/usage/report:
+    post:
+      summary: Generate a usage report for a specific time range
+      description: |
+        Generates a usage report for the specified time range.
+        Note: The time range follows the Half-Open approach where the start time is inclusive and the end time is exclusive.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                beginTime:
+                  type: string
+                  format: date-time
+                  description: |
+                    The inclusive start time of the range in ISO8601 format.
+                    Usage data from this time onward will be included.
+                untilTime:
+                  type: string
+                  format: date-time
+                  description: |
+                    The exclusive end time of the range in ISO8601 format.
+                    Usage data before this time will be included.
+                format:
+                  type: string
+                  enum: [pdf, csv, json]
+                  default: pdf
+                  description: The format of the generated report
+              required:
+                - beginTime
+                - untilTime
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/platform/operations/op-123
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "event"
+        name:
+          type: string
+        description:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+          description: The time when the event occurred
+        severity:
+          type: string
+          enum: [info, warning, error, critical]
+        source:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - timestamp
+        - severity
+        - source
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Metric:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "metric"
+        name:
+          type: string
+        description:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+          description: The time when the metric was collected
+        value:
+          type: number
+          format: float
+        unit:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - name
+        - timestamp
+        - value
+        - unit
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Operation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the operation that it can be retrieved by
+        resourceId:
+          type: string
+          description: ID of the resource being operated on when applicable
+        operationType:
+          type: string
+          description: Describes the operation against the resource
+          example: "generate-report"
+        createdBy:
+          type: string
+          description: userId of the user that initialized the operation
+        createdTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation creation time
+        completedTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation completion time, whether success or failure
+        status:
+          type: string
+          enum: [pending, inProgress, succeeded, failed]
+          description: One of "pending", "inProgress", "succeeded", "failed"
+        error:
+          type: object
+          description: Non-null if status is "failed"
+          properties:
+            message:
+              type: string
+              description: User-friendly message detailing what went wrong
+            errorId:
+              type: string
+              description: A UUID for debugging that must be logged upon its creation
+          required:
+            - message
+            - errorId
+      required:
+        - id
+        - operationType
+        - createdBy
+        - createdTime
+        - status

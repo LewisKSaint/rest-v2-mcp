@@ -1,0 +1,84 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Missing Audit Fields
+  version: 1.0.0
+paths:
+  /api/v1/users:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+    post:
+      summary: Create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+components:
+  schemas:
+    UserList:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        pageInfo:
+          type: object
+          properties:
+            totalCount:
+              type: integer
+            pageSize:
+              type: integer
+            pageNumber:
+              type: integer
+    UserInput:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - username
+        - email
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        # Missing createdBy field
+        createdTime:
+          type: string
+          # Missing format: date-time
+        # Missing updatedBy field
+        # Missing updatedTime field
+      required:
+        - id
+        - username
+        - email

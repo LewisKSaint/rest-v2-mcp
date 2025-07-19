@@ -1,0 +1,28 @@
+{
+  "name": "singular_user_resources",
+  "description": "Validates that single, unique resources owned by the currently logged in user use singular nouns as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/.*?/users/\\{[^/]+\\}/.*$",
+      "message": "User-specific resources should use singular noun 'user' instead of 'users/{id}' for the current user"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/.*?/me/.*$",
+      "inverse": true,
+      "message": "User-specific resources should use 'user' instead of 'me' for the current user"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v[0-9]+/.*?/user/.*$",
+      "inverse": true,
+      "message": "User-specific resources should use singular noun 'user' for the current user"
+    },
+    {
+      "type": "documentation_check",
+      "message": "API documentation should clearly state that 'user' refers to the currently logged in user"
+    }
+  ]
+}

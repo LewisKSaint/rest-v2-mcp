@@ -1,0 +1,52 @@
+{
+  "name": "api_deprecation",
+  "description": "Validates that API deprecation follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The part of the API being deprecated MUST be indicated in the documentation"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Deprecation description MUST be indicated in the documentation"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Deprecation description MUST include reason for deprecation, replacement if any, and proposed date of removal"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The response of the deprecated API MUST include a X-Solace-API-Deprecated header with the value being a link to the documentation containing the deprecation description"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "If generally available API/functionality is being replaced, the replacement MUST also be GA before deprecation"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Date of removal MUST be stated in ISO8601 format"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "For deprecated operations/endpoints, deprecation description must be in the summary"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "For deprecated parameters, deprecation description must be in the description"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "For deprecated request body properties, deprecation description must be in the description"
+    }
+  ]
+}

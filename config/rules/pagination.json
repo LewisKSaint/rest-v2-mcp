@@ -1,0 +1,42 @@
+{
+  "name": "pagination",
+  "description": "Validates that API pagination follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "REST APIs should accept pageSize and pageNumber request parameters"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "Responses should include pagination information in the meta.pagination object"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The count field should be an integer representing the total number of elements available across all pages"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The pageNumber field should be an integer representing the current page number (starts at 1, not 0)"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The pageSize field should be an integer representing the page size requested by the user or the default page size"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The nextPage field should be an integer representing the next page available with results, or null if there are no other pages"
+    },
+    {
+      "type": "path_pattern",
+      "pattern": ".*",
+      "message": "The totalPages field should be an integer representing the total number of pages"
+    }
+  ]
+}

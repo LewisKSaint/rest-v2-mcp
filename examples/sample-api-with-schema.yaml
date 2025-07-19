@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Schema
+  version: 1.0.0
+paths:
+  /api/v1/users:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+    post:
+      summary: Create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/v1/users/{id}:
+    get:
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+components:
+  schemas:
+    UserList:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        pageInfo:
+          type: object
+          properties:
+            totalCount:
+              type: integer
+            pageSize:
+              type: integer
+            pageNumber:
+              type: integer
+    UserInput:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - username
+        - email
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - email
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime

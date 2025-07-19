@@ -1,0 +1,42 @@
+{
+  "name": "field_resource_naming",
+  "description": "Validates that field and resource naming follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "path_pattern",
+      "pattern": "^/api/v2/[a-zA-Z]+/",
+      "message": "URL structure must start with /api/v2/<product area>/"
+    },
+    {
+      "type": "collection_plural",
+      "message": "Resources that are collections must be represented by plural nouns (ex. /api/v2/platform/environments)"
+    },
+    {
+      "type": "id_reference_prefix",
+      "message": "IDs that refer to other resources must be prefixed with the type of object (ex. organizationId)"
+    },
+    {
+      "type": "resource_id_field",
+      "message": "The resource being accessed should only use 'id' as the field"
+    },
+    {
+      "type": "no_org_id_in_path",
+      "message": "The path must not include an organization ID variable as it is defined by the bearer token"
+    },
+    {
+      "type": "camel_case",
+      "pattern": "^[a-z][a-zA-Z0-9]*$",
+      "message": "Resources and fields must use camel case (ex. organizationName)"
+    },
+    {
+      "type": "no_shortened_words",
+      "exceptions": ["admin", "config", "vpn", "vpc", "ec2"],
+      "message": "No shortened words; prefer 'organization' over 'org' (with documented exceptions)"
+    },
+    {
+      "type": "abbreviation_camel_case",
+      "message": "Camel case to be used for abbreviations (ex. awsVpc)"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "time_range_half_open",
+  "description": "Validates that API time ranges follow the Half-Open approach as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "time_range_approach",
+      "approach": "half-open",
+      "message": "An API with a time range MUST use the Half-Open approach. The start time is always inclusive while the end time is always exclusive."
+    },
+    {
+      "type": "time_range_documentation",
+      "message": "The API documentation must clearly state that the start time is inclusive and the end time is exclusive to avoid ambiguity."
+    },
+    {
+      "type": "time_range_parameter_naming",
+      "start_pattern": "^(start|from|begin)(Time|Date)?$",
+      "end_pattern": "^(end|to|until)(Time|Date)?$",
+      "message": "Time range parameters should follow naming conventions: startTime/endTime, fromDate/toDate, etc."
+    },
+    {
+      "type": "time_range_format",
+      "format": "ISO8601",
+      "message": "Time range parameters should use ISO8601 format for consistency."
+    }
+  ]
+}

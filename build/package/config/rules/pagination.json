@@ -1,0 +1,51 @@
+{
+  "name": "pagination",
+  "description": "Validates that API pagination follows Solace REST API conventions as per ADR",
+  "enabled": true,
+  "conditions": [
+    {
+      "type": "request_parameters",
+      "parameters": ["pageSize", "pageNumber"],
+      "message": "REST APIs should accept pageSize and pageNumber request parameters"
+    },
+    {
+      "type": "response_pagination",
+      "path": "meta.pagination",
+      "fields": ["count", "pageNumber", "pageSize", "nextPage", "totalPages"],
+      "message": "Responses should include pagination information in the meta.pagination object"
+    },
+    {
+      "type": "pagination_field_type",
+      "field": "meta.pagination.count",
+      "type": "integer",
+      "message": "The count field should be an integer representing the total number of elements available across all pages"
+    },
+    {
+      "type": "pagination_field_type",
+      "field": "meta.pagination.pageNumber",
+      "type": "integer",
+      "minimum": 1,
+      "message": "The pageNumber field should be an integer representing the current page number (starts at 1, not 0)"
+    },
+    {
+      "type": "pagination_field_type",
+      "field": "meta.pagination.pageSize",
+      "type": "integer",
+      "minimum": 1,
+      "message": "The pageSize field should be an integer representing the page size requested by the user or the default page size"
+    },
+    {
+      "type": "pagination_field_type",
+      "field": "meta.pagination.nextPage",
+      "type": ["integer", "null"],
+      "message": "The nextPage field should be an integer representing the next page available with results, or null if there are no other pages"
+    },
+    {
+      "type": "pagination_field_type",
+      "field": "meta.pagination.totalPages",
+      "type": "integer",
+      "minimum": 1,
+      "message": "The totalPages field should be an integer representing the total number of pages"
+    }
+  ]
+}

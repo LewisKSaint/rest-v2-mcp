@@ -1,0 +1,317 @@
+openapi: 3.0.0
+info:
+  title: Sample API with Proper Deprecation
+  version: 1.0.0
+paths:
+  /api/v2/billing/invoices:
+    get:
+      summary: "Get all invoices [DEPRECATED: This endpoint will be removed on 2025-12-31. Please use /api/v2/platform/organizations/{organizationId}/usage instead.]"
+      description: "Returns a list of invoices for the organization."
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+        - name: vmrVersion
+          in: query
+          required: false
+          schema:
+            type: string
+          description: "Filter by VMR version [DEPRECATED: This parameter will be removed on 2025-12-31. Please use brokerVersion parameter instead.]"
+        - name: brokerVersion
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by broker version
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Solace-API-Deprecated:
+              schema:
+                type: string
+              description: Link to documentation containing deprecation details
+              example: "https://docs.solace.com/API-References/Deprecation-Notices.htm#billing-invoices"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+  /api/v2/platform/organizations/{organizationId}/usage:
+    get:
+      summary: Get organization usage
+      description: "Returns usage information for the organization."
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          description: Number of items to return per page
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number to return (starting at 1)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Usage'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/PaginationMeta'
+                required:
+                  - data
+  /api/v2/infrastructure/services:
+    post:
+      summary: Create a new service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceInput'
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the operation resource
+              example: /api/v2/infrastructure/services/svc-123/operations/op-456
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Operation'
+                required:
+                  - data
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: integer
+          nullable: true
+        totalPages:
+          type: integer
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "invoice"
+        invoiceNumber:
+          type: string
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [paid, unpaid, overdue]
+        issuedDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        partition:
+          type: string
+          description: "Partition information [DEPRECATED: This field will be removed on 2025-12-31 as it is no longer used.]"
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - invoiceNumber
+        - amount
+        - currency
+        - status
+        - issuedDate
+        - dueDate
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    Usage:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: "usage"
+        organizationId:
+          type: string
+        period:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date-time
+            endDate:
+              type: string
+              format: date-time
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              serviceId:
+                type: string
+              serviceType:
+                type: string
+              usage:
+                type: number
+                format: float
+              unit:
+                type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        updatedTime:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - organizationId
+        - period
+        - services
+        - createdBy
+        - createdTime
+        - updatedBy
+        - updatedTime
+    ServiceInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [messaging, event-portal, event-broker]
+        plan:
+          type: string
+          enum: [standard, enterprise, premium]
+      required:
+        - name
+        - type
+        - plan
+    Operation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the operation that it can be retrieved by
+        resourceId:
+          type: string
+          description: ID of the resource being operated on when applicable
+        operationType:
+          type: string
+          description: Describes the operation against the resource, such as "create", "failover", or "import"
+          example: "create"
+        createdBy:
+          type: string
+          description: userId of the user that initialized the operation
+        createdTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation creation time
+        completedTime:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted date of operation completion time, whether success or failure
+        status:
+          type: string
+          enum: [pending, inProgress, succeeded, failed]
+          description: One of "pending", "inProgress", "succeeded", "failed"
+        error:
+          type: object
+          description: Non-null if status is "failed"
+          properties:
+            message:
+              type: string
+              description: User-friendly message detailing what went wrong
+            errorId:
+              type: string
+              description: A UUID for debugging that must be logged upon its creation
+          required:
+            - message
+            - errorId
+      required:
+        - id
+        - operationType
+        - createdBy
+        - createdTime
+        - status
