@@ -150,8 +150,6 @@ The server also supports loading validation rules from JSON files in the `config
 - **Singular User Resources**: Validates singular user resources
 - **Enum Naming**: Validates enum values follow UPPER_SNAKE_CASE naming convention
 
-For detailed information about each rule, see the [USAGE_README.md](USAGE_README.md) file.
-
 ### URL Path Validation
 
 The server now supports validating a single URL path against Solace REST API conventions. This feature allows you to validate a URL path without having to create a complete OpenAPI specification.
