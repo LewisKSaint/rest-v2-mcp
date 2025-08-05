@@ -15,7 +15,7 @@ This guide explains how to use the Solace REST V2 MCP Go server with Cline to va
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/solace/restv2-api-server-go.git
+git clone https://github.com/solacedev/restv2-api-server-go.git
 cd restv2-api-server-go
 ```
 

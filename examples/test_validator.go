@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/solace/restv2-api-server-go/internal/validator"
+	"github.com/solacedev/restv2-api-server-go/internal/validator"
 )
 
 func main() {

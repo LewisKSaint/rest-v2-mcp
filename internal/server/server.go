@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/solace/restv2-api-server-go/internal/validator"
+	"github.com/solacedev/restv2-api-server-go/internal/validator"
 )
 
 // Server represents the REST API Validator MCP server

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/solace/restv2-api-server-go/internal/rules"
+	"github.com/solacedev/restv2-api-server-go/internal/rules"
 	"gopkg.in/yaml.v3"
 )
 

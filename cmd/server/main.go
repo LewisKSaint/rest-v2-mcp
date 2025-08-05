@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/solace/restv2-api-server-go/internal/server"
+	"github.com/solacedev/restv2-api-server-go/internal/server"
 )
 
 func main() {

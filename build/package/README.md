@@ -25,7 +25,7 @@ This is a Go implementation of the Solace REST V2 API Validator MCP server. It p
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/solace/restv2-api-server-go.git
+git clone https://github.com/solacedev/restv2-api-server-go.git
 cd restv2-api-server-go
 ```
 

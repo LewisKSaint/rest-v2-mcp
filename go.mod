@@ -1,4 +1,4 @@
-module github.com/solace/restv2-api-server-go
+module github.com/solacedev/restv2-api-server-go
 
 go 1.16
 
